@@ -26,8 +26,8 @@ sudo cryptsetup --verbose --verify-passphrase luksFormat $PARTITION
 echo "Opening LUKS partition"
 sudo cryptsetup luksOpen $PARTITION encData
 
-echo "Creating ext3 filesystem on encrypted partition"
-sudo mkfs.ext3 /dev/mapper/encData
+echo "Creating ext4 filesystem on encrypted partition"
+sudo mkfs.ext4 /dev/mapper/encData
 
 echo "Labeling filesystem as persistence"
 sudo e2label /dev/mapper/encData persistence
