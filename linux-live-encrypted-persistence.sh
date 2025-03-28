@@ -2,15 +2,17 @@
 
 # Color variables
 WHITE='\033[1;37m'
-BRIGHT_GREEN='\033[1;32m'
+WARNING_COLOR='\033[38;5;129m'  # Hex color #E700FF
 RESET='\033[0m'
 
-# Header
+# Header with custom color for warning text
+echo ""
 echo -e "${WHITE}+--------------------------------------------------------------+${RESET}"
-echo -e "${WHITE}|  WARNING: The selected partition will be COMPLETELY ERASED!  |${RESET}"
-echo -e "${WHITE}|  BACKUP your data before proceeding! ALL data still present  |${RESET}"
-echo -e "${WHITE}|  on partitions that gets encrypted will be PERMANENTLY LOST  |${RESET}"
+echo -e "${WARNING_COLOR}|  WARNING: The selected partition will be COMPLETELY ERASED!  |${RESET}"
+echo -e "${WARNING_COLOR}|  BACKUP your data before proceeding! ALL data still present  |${RESET}"
+echo -e "${WARNING_COLOR}|  on partitions that gets encrypted will be PERMANENTLY LOST  |${RESET}"
 echo -e "${WHITE}+--------------------------------------------------------------+${RESET}"
+echo ""
 
 # Prompt for the partition
 echo ""
