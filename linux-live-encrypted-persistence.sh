@@ -13,6 +13,7 @@ echo -e "${WHITE}|  Any data present on the partition will be PERMANENTLY LOST  
 echo -e "${WHITE}+--------------------------------------------------------------+${RESET}"
 
 # Prompt for the partition
+echo ""
 echo -e "${BRIGHT_GREEN}Enter the partition that you want encrypted: (e.g. /dev/sdxx):${RESET}"
 echo ""
 read PARTITION
