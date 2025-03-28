@@ -1,59 +1,125 @@
 #!/bin/bash
 
+# Define colors for styling
+RED='\e[1;91m'
+BRIGHT_GREEN='\e[1;92m'
+WHITE='\e[1;97m'
+RESET='\e[0m'
+
+# Function to display a warning message with colors
+display_warning() {
+    echo -e "\n${RED}+--------------------------------------------------------------+${RESET}"
+    echo -e "${RED}|${RESET} ${BRIGHT_GREEN} WARNING: The selected partition will be COMPLETELY ERASED! ${RESET} ${RED}|${RESET}"
+    echo -e "${RED}|${RESET} ${BRIGHT_GREEN} Backup your data before proceeding!               ${RESET} ${RED}|${RESET}"
+    echo -e "${RED}|${RESET} ${BRIGHT_GREEN} Any data present on the partition will be PERMANENTLY LOST ${RESET} ${RED}|${RESET}"
+    echo -e "${RED}+--------------------------------------------------------------+${RESET}\n"
+}
+
+# Display warning before proceeding
+display_warning
+
 # Prompt the user to enter the partition
-echo "Please enter the partition (e.g., /dev/sdxx):"
+echo -e "${WHITE}Please enter the partition (e.g., /dev/sdxx):${RESET}"
+echo ""
 read PARTITION
 
 if [ -z "$PARTITION" ]; then
-    echo "No partition entered. Exiting."
+    echo -e "${RED}No partition entered. Exiting.${RESET}"
     exit 1
 fi
 
 # Check if the partition exists
 if ! sudo fdisk -l | grep -q "$PARTITION"; then
-    echo "Partition $PARTITION does not exist. Exiting."
+    echo -e "${RED}Partition $PARTITION does not exist. Exiting.${RESET}"
     exit 1
 fi
-# Perform the steps to encrypt and set up the partition
+
+# Set error handling
 set -e
 
-echo "Starting disk operations on $PARTITION"
+# Check if the mount point is already in use and unmount if necessary
+MOUNTED=$(findmnt -no TARGET "$PARTITION" 2>/dev/null || true)
+if [[ -n "$MOUNTED" ]]; then
+    echo -e "\n${RED}Partition $PARTITION is currently mounted at $MOUNTED. Unmounting...${RESET}"
+    sudo umount -lf "$PARTITION" || {
+        echo -e "${RED}Failed to unmount $PARTITION. Exiting.${RESET}"
+        exit 1
+    }
+fi
+
+# Make sure the mount point /mnt/persistence is free
+if mountpoint -q /mnt/persistence; then
+    echo -e "${RED}/mnt/persistence is already mounted. Unmounting...${RESET}"
+    sudo umount -lf /mnt/persistence || {
+        echo -e "${RED}Failed to unmount /mnt/persistence. Exiting.${RESET}"
+        exit 1
+    }
+fi
+
+# Perform the steps to encrypt and set up the partition
+echo -e "\n${BRIGHT_GREEN}Starting disk operations on $PARTITION...${RESET}"
 sudo fdisk -l
 
-echo "Formatting $PARTITION with LUKS"
-sudo cryptsetup --verbose --verify-passphrase luksFormat $PARTITION
+# Formatting partition with LUKS
+echo -e "\n${BRIGHT_GREEN}Formatting $PARTITION with LUKS encryption...${RESET}"
+echo -e "${WHITE}Please enter a passphrase for LUKS encryption:${RESET}"
 
-echo "Opening LUKS partition"
-sudo cryptsetup luksOpen $PARTITION encData
+# LUKS Format Step
+sudo cryptsetup luksFormat "$PARTITION"
 
-echo "Creating ext4 filesystem on encrypted partition"
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to format the partition with LUKS encryption. Exiting.${RESET}"
+    exit 1
+fi
+
+# Opening LUKS partition as encData
+echo -e "\n${BRIGHT_GREEN}Opening LUKS partition as encData...${RESET}"
+sudo cryptsetup luksOpen "$PARTITION" encData
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to open LUKS partition. Exiting.${RESET}"
+    exit 1
+fi
+
+# Creating ext4 filesystem
+echo -e "\n${BRIGHT_GREEN}Creating ext4 filesystem on encrypted partition...${RESET}"
 sudo mkfs.ext4 /dev/mapper/encData
 
-echo "Labeling filesystem as persistence"
+# Labeling filesystem as 'persistence'
+echo -e "\n${BRIGHT_GREEN}Labeling filesystem as persistence...${RESET}"
 sudo e2label /dev/mapper/encData persistence
 
-echo "Creating mount point /mnt/encData"
-sudo mkdir -p /mnt/encData
+# Creating mount point
+echo -e "\n${BRIGHT_GREEN}Creating mount point at /mnt/persistence...${RESET}"
+sudo mkdir -p /mnt/persistence
 
-echo "Mounting encrypted partition"
-sudo mount /dev/mapper/encData /mnt/encData
+# Mounting encrypted partition
+echo -e "\n${BRIGHT_GREEN}Mounting encrypted partition...${RESET}"
+sudo mount /dev/mapper/encData /mnt/persistence
 
-echo "Changing directory to /mnt/encData"
-cd /mnt/encData
+# Changing directory to mount point
+echo -e "\n${BRIGHT_GREEN}Changing directory to /mnt/persistence...${RESET}"
+cd /mnt/persistence
 
-echo "Creating persistence.conf"
+# Creating persistence.conf file
+echo -e "\n${BRIGHT_GREEN}Creating persistence.conf...${RESET}"
 sudo touch persistence.conf
 
-echo "Editing persistence.conf"
+# Editing persistence.conf
+echo -e "\n${BRIGHT_GREEN}Editing persistence.conf...${RESET}"
 sudo bash -c 'echo "/ union" > persistence.conf'
 
-echo "Returning to home directory"
+# Returning to home directory
+echo -e "\n${BRIGHT_GREEN}Returning to home directory...${RESET}"
 cd ~
 
-echo "Unmounting encrypted partition"
+# Unmounting encrypted partition
+echo -e "\n${BRIGHT_GREEN}Unmounting encrypted partition...${RESET}"
 sudo umount /dev/mapper/encData
 
-echo "Closing LUKS partition"
+# Closing LUKS partition
+echo -e "\n${BRIGHT_GREEN}Closing LUKS partition...${RESET}"
 sudo cryptsetup luksClose /dev/mapper/encData
 
-echo "Disk setup completed successfully."
+# Completion message
+echo -e "\n${BRIGHT_GREEN}Disk setup completed successfully! 🎉${RESET}\n"
