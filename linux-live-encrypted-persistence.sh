@@ -8,13 +8,13 @@ RESET='\033[0m'
 # Header
 echo -e "${WHITE}+--------------------------------------------------------------+${RESET}"
 echo -e "${WHITE}|  WARNING: The selected partition will be COMPLETELY ERASED!  |${RESET}"
-echo -e "${WHITE}|           Backup your data before proceeding!                |${RESET}"
-echo -e "${WHITE}|  Any data present on the partition will be PERMANENTLY LOST  |${RESET}"
+echo -e "${WHITE}|  BACKUP your data before proceeding! ALL data still present  |${RESET}"
+echo -e "${WHITE}|  on partitions that gets encrypted will be PERMANENTLY LOST  |${RESET}"
 echo -e "${WHITE}+--------------------------------------------------------------+${RESET}"
 
 # Prompt for the partition
 echo ""
-echo -e "${BRIGHT_GREEN}Enter the partition that you want encrypted: (e.g. /dev/sdxx):${RESET}"
+echo -e "${BRIGHT_GREEN}Please enter partition to be encrypted (e.g. /dev/sdxx):${RESET}"
 echo ""
 read PARTITION
 
