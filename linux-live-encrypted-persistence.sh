@@ -82,44 +82,49 @@ if [ $? -ne 0 ]; then
 fi
 
 # Creating ext4 filesystem
-echo -e "\n${BRIGHT_GREEN}Creating ext4 filesystem on encrypted partition...${RESET}"
+echo -e "\n${BRIGHT_GREEN}Creating ext4 filesystem on encrypted partition!${RESET}"
 sudo mkfs.ext4 /dev/mapper/encData
 
 # Labeling filesystem as 'persistence'
-echo -e "\n${BRIGHT_GREEN}Labeling filesystem as persistence...${RESET}"
+echo -e "\n${BRIGHT_GREEN}Labeling filesystem as persistence${RESET}"
 sudo e2label /dev/mapper/encData persistence
 
 # Creating mount point
-echo -e "\n${BRIGHT_GREEN}Creating mount point at /mnt/persistence...${RESET}"
+echo -e "\n${BRIGHT_GREEN}Creating mount point at /mnt/persistence${RESET}"
 sudo mkdir -p /mnt/persistence
 
 # Mounting encrypted partition
-echo -e "\n${BRIGHT_GREEN}Mounting encrypted partition...${RESET}"
+echo -e "\n${BRIGHT_GREEN}Mounting encrypted partition!${RESET}"
 sudo mount /dev/mapper/encData /mnt/persistence
 
 # Changing directory to mount point
-echo -e "\n${BRIGHT_GREEN}Changing directory to /mnt/persistence...${RESET}"
+echo -e "\n${BRIGHT_GREEN}Changing directory to /mnt/persistence${RESET}"
 cd /mnt/persistence
 
 # Creating persistence.conf file
-echo -e "\n${BRIGHT_GREEN}Creating persistence.conf...${RESET}"
+echo -e "\n${BRIGHT_GREEN}Creating persistence.conf!${RESET}"
 sudo touch persistence.conf
 
 # Editing persistence.conf
-echo -e "\n${BRIGHT_GREEN}Editing persistence.conf...${RESET}"
+echo -e "\n${BRIGHT_GREEN}Editing persistence.conf!${RESET}"
 sudo bash -c 'echo "/ union" > persistence.conf'
 
 # Returning to home directory
-echo -e "\n${BRIGHT_GREEN}Returning to home directory...${RESET}"
+echo -e "\n${BRIGHT_GREEN}Returning to home directory!${RESET}"
 cd ~
 
 # Unmounting encrypted partition
-echo -e "\n${BRIGHT_GREEN}Unmounting encrypted partition...${RESET}"
+echo -e "\n${BRIGHT_GREEN}Unmounting encrypted partition.${RESET}"
 sudo umount /dev/mapper/encData
 
 # Closing LUKS partition
-echo -e "\n${BRIGHT_GREEN}Closing LUKS partition...${RESET}"
+echo -e "\n${BRIGHT_GREEN}Closing LUKS partition.${RESET}"
 sudo cryptsetup luksClose /dev/mapper/encData
 
 # Completion message
-echo -e "\n${BRIGHT_GREEN}Disk setup completed successfully! 🎉${RESET}\n"
+echo -e "\n${BRIGHT_GREEN}THE ENCRYPTED PERSITENT PARTITION HAVE BEEN CREATED!${RESET}\n"
+
+# Final prompt to exit the script
+echo -e "\nPress Enter to exit the script."
+read -r
+
