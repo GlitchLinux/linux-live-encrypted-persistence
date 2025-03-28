@@ -12,7 +12,6 @@ echo -e "${WARNING_COLOR}|  WARNING: The selected partition will be COMPLETELY E
 echo -e "${WARNING_COLOR}|  BACKUP your data before proceeding! ALL data still present  |${RESET}"
 echo -e "${WARNING_COLOR}|  on partitions that gets encrypted will be PERMANENTLY LOST  |${RESET}"
 echo -e "${WHITE}+--------------------------------------------------------------+${RESET}"
-echo ""
 
 # Prompt for the partition
 echo ""
