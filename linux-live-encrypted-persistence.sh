@@ -39,7 +39,7 @@ echo ""
 sudo fdisk -l
 
 echo ""
-echo -e "${WHITE}Formatting $PARTITION with LUKS encryption!${RESET}"
+echo -e "${WHITE}Formatting $PARTITION with LUKS encryption${RESET}"
 echo ""
 sudo cryptsetup luksFormat "$PARTITION"
 echo ""
