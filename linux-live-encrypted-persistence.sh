@@ -49,6 +49,7 @@ sudo cryptsetup luksOpen "$PARTITION" encData
 echo ""
 
 echo -e "${BRIGHT_GREEN}Creating ext4 filesystem on encrypted partition${RESET}"
+echo ""
 sudo mkfs.ext4 /dev/mapper/encData
 
 echo ""
