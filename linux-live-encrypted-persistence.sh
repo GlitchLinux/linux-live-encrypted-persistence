@@ -39,9 +39,11 @@ sudo fdisk -l
 echo -e "${WHITE}Formatting $PARTITION with LUKS encryption...${RESET}"
 echo ""
 sudo cryptsetup luksFormat "$PARTITION"
+echo ""
 echo -e "${BRIGHT_GREEN}Please enter passphrase to open the new LUKS encryption:${RESET}"
 echo ""
 sudo cryptsetup luksOpen "$PARTITION" encData
+echo ""
 
 echo -e "${WHITE}Creating ext4 filesystem on encrypted partition...${RESET}"
 sudo mkfs.ext4 /dev/mapper/encData
@@ -62,19 +64,22 @@ echo -e "${WHITE}Editing persistence.conf${RESET}"
 echo "/ union" | sudo tee /mnt/persistence/persistence.conf > /dev/null
 
 echo -e "${WHITE}Returning to home directory...${RESET}"
+echo ""
 cd ~
 
 echo -e "${WHITE}Unmounting encrypted partition...${RESET}"
+echo ""
 sudo umount /mnt/persistence
 
 echo -e "${WHITE}Closing LUKS partition...${RESET}"
+echo ""
 sudo cryptsetup luksClose encData
 
 # Completion message
-echo -e "${WHITE}+-----------------------------------------------------+${RESET}"
-echo -e "${BRIGHT_GREEN}| THE ENCRYPTED PERSISTENT PARTITION HAS BEEN CREATED |${RESET}"
-echo -e "${WHITE}+-----------------------------------------------------+${RESET}"
+echo -e "${PINK}+-----------------------------------------------------+${RESET}"
+echo -e "${PINK}| THE ENCRYPTED PERSISTENT PARTITION HAS BEEN CREATED |${RESET}"
+echo -e "${PINK}+-----------------------------------------------------+${RESET}"
 
 # Final prompt to exit the script
-echo -e "\n${BRIGHT_GREEN}Press Enter to exit the script...${RESET}"
+echo -e "\n${WHITE}Press Enter to exit the script...${RESET}"
 read -r
