@@ -48,7 +48,7 @@ echo ""
 sudo cryptsetup luksOpen "$PARTITION" encData
 echo ""
 
-echo -e "${WHITE}Creating ext4 filesystem on encrypted partition...${RESET}"
+echo -e "${WHITE}Creating ext4 filesystem on encrypted partition${RESET}"
 sudo mkfs.ext4 /dev/mapper/encData
 
 echo ""
@@ -63,21 +63,25 @@ echo ""
 echo -e "${WHITE}Mounting encrypted partition...${RESET}"
 sudo mount /dev/mapper/encData /mnt/persistence
 
+echo ""
 echo -e "${WHITE}Creating persistence.conf file...${RESET}"
 sudo touch /mnt/persistence/persistence.conf
 
+echo ""
 echo -e "${WHITE}Editing persistence.conf${RESET}"
 echo "/ union" | sudo tee /mnt/persistence/persistence.conf > /dev/null
 
-echo -e "${WHITE}Returning to home directory...${RESET}"
 echo ""
+echo -e "${BRIGHT_GREEN}Returning to home directory...${RESET}"
 cd ~
 
+echo ""
 echo -e "${WHITE}Unmounting encrypted partition...${RESET}"
 echo ""
 sudo umount /mnt/persistence
 
-echo -e "${WHITE}Closing LUKS partition...${RESET}"
+echo ""
+echo -e "${WHITE}Closing LUKS partition.${RESET}"
 echo ""
 sudo cryptsetup luksClose encData
 
